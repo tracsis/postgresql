@@ -33,15 +33,15 @@ action :install do
 
   package server_pkg_name
 
-  if platform_family?('rhel', 'fedora', 'amazon') && new_resource.init_db != initialized
-    db_command = rhel_init_db_command(new_resource.version.delete('.'))
+  if platform_family?('rhel', 'fedora', 'amazon') && new_resource.init_db && !initialized?
+    db_command = rhel_init_db_command
     if db_command
       execute 'init_db' do
         command db_command
       end
-    else # we don't know about this platform version
+    else # we don't know about this platform
       log 'InitDB' do
-        message 'InitDB is not supported on this version of operating system.'
+        message 'InitDB is not supported on this distro. Skipping.'
         level :error
       end
 
@@ -79,8 +79,9 @@ action_class do
     r
   end
 
-  def initialized
+  def initialized?
     true if ::File.exist?("#{data_dir}/initialized.txt")
+    false
   end
 
   # determine the platform specific server package name
@@ -94,11 +95,13 @@ action_class do
   end
 
   # determine the appropriate DB init command to run based on RHEL/Fedora/Amazon release
-  def rhel_init_db_command(ver)
+  def rhel_init_db_command
     if platform_family?('fedora') || (platform_family?('rhel') && node['platform_version'].to_i >= 7)
-      "/usr/pgsql-#{new_resource.version}/bin/postgresql#{ver}-setup initdb"
+      "/usr/pgsql-#{new_resource.version}/bin/postgresql#{new_resource.version.delete('.')}-setup initdb"
     elsif platform_family?('rhel') && node['platform_version'].to_i == 6
       "service postgresql-#{new_resource.version} initdb"
+    elsif platform?('amazon')
+      "service postgresql#{new_resource.version.delete('.')} initdb"
     end
   end
 end
