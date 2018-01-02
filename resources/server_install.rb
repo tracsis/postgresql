@@ -80,7 +80,7 @@ action_class do
   end
 
   def initialized?
-    true if ::File.exist?("#{data_dir}/initialized.txt")
+    return true if ::File.exist?("#{data_dir}/initialized.txt")
     false
   end
 
