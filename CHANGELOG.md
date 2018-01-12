@@ -2,6 +2,10 @@
 
 This file is used to list changes made in each version of the postgresql cookbook.
 
+## v5.2.1 (2018-01-12)
+
+- Made the `pg_gem` version option work
+
 ## v5.2.0 (2016-12-30)
 
 - Updated contacts and links to point to Sous Chefs now
