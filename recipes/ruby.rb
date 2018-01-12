@@ -80,7 +80,7 @@ rescue LoadError
     chef_gem 'pg' do
       compile_time true if respond_to?(:compile_time)
       # allow optional attribute to install specific version of pg gem
-      node['postgresql']['pg_gem']['version'] if node['postgresql']['pg_gem']['version']
+      version node['postgresql']['pg_gem']['version'] if node['postgresql']['pg_gem']['version']
     end
   rescue Gem::Installer::ExtensionBuildError, Mixlib::ShellOut::ShellCommandFailed => e
     # Are we an omnibus install?
